@@ -1,10 +1,9 @@
 module Joa where
 
+import Control.Monad.Random (getStdGen, runRand)
 import Data.List (group, sort)
-import Data.Map (fromListWith, toList)
 import Dice (Face, applyDefence, rolldices)
 import Parser (parse)
-import System.Random (getStdGen)
 
 -- parse a command and print the result
 joa :: String -> IO ()
@@ -12,8 +11,8 @@ joa command = do
   let (attackDices, defenceDices, isDefence) = parse command
 
   gen <- getStdGen
-  let (attackRoll, gen') = rolldices gen attackDices
-  let (defenceRoll, _) = rolldices gen' defenceDices
+  let (attackRoll, gen') = runRand (rolldices attackDices) gen
+  let (defenceRoll, _) = runRand (rolldices defenceDices) gen'
 
   if isDefence
     then do
@@ -22,10 +21,10 @@ joa command = do
       print ("result", frequency (applyDefence attackRoll defenceRoll))
     else print (frequency attackRoll)
 
--- frequency of each face in the roll (using a map)
-frequency :: [Face] -> [(Face, Int)]
-frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
-
 -- frequency of each face in the roll (using list group)
-frequency' :: [Face] -> [(Face, Int)]
-frequency' = map (\(x : xs) -> (x, length xs + 1)) . group . sort
+frequency :: [Face] -> [(Face, Int)]
+frequency = map (\(x : xs) -> (x, length xs + 1)) . group . sort
+
+-- -- frequency of each face in the roll (using a map)
+-- frequency :: [Face] -> [(Face, Int)]
+-- frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
