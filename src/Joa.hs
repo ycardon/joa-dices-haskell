@@ -1,8 +1,8 @@
 module Joa where
 
 import Control.Monad.Random (getStdGen, runRand)
-import Data.List (group, sort)
-import Dice (Face, applyDefence, rolldices)
+import Data.Map (fromListWith, toList)
+import Dice (Face (..), Roll, rolldices)
 import Parser (parse)
 
 -- parse a command and print the result
@@ -21,10 +21,40 @@ joa command = do
       print ("result", frequency (applyDefence attackRoll defenceRoll))
     else print (frequency attackRoll)
 
--- frequency of each face in the roll (using list group)
-frequency :: [Face] -> [(Face, Int)]
-frequency = map (\(x : xs) -> (x, length xs + 1)) . group . sort
+-- count the number of a given face in a roll result
+count :: Face -> Roll -> Int
+count face roll = length (filter (== face) roll)
 
--- -- frequency of each face in the roll (using a map)
--- frequency :: [Face] -> [(Face, Int)]
--- frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
+-- cancel roll faces by an amount of shield count (fold version)
+cancel :: Face -> (Roll, Int) -> (Roll, Int)
+cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
+  where
+    f x (xs, n) = if n <= 0 then (x : xs, 0) else if x == face then (xs, n - 1) else (x : xs, n)
+
+-- apply defence shields on the attack and remove shields from the attack)
+applyDefence :: Roll -> Roll -> Roll
+applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ roll
+  where
+    (roll, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defence)
+
+-- frequency of each face in the roll (using a map)
+frequency :: [Face] -> [(Face, Int)]
+frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
+
+--------- implementation variants ---------
+
+-- -- cancel roll faces by an amount of shield count (recursive version)
+-- cancel' :: Face -> (Roll, Int) -> (Roll, Int)
+-- cancel' _ ([], n) = ([], n)
+-- cancel' face (x : xs, n)
+--   | n <= 0 = (x : xs, 0)
+--   | x == face = cancel' face (xs, n -1)
+--   | otherwise = (x : xs', n')
+--   where
+--     (xs', n') = cancel' face (xs, n)
+
+-- import Data.List (group, sort)
+
+-- -- frequency of each face in the roll (using list group)
+-- frequency' :: [Face] -> [(Face, Int)]
+-- frequency' = map (\(x : xs) -> (x, length xs + 1)) . group . sort
