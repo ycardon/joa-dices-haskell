@@ -22,9 +22,11 @@ joa command = do
       putStrLn $ "result:  " ++ showRoll (applyDefence attackRoll defenceRoll)
     else putStrLn $ showRoll attackRoll
 
--- count the number of a given face in a roll
-count :: Face -> Roll -> Int
-count face = length . filter (== face)
+-- apply defence shields on the attack and remove unrelevant faces from the attack
+applyDefence :: Roll -> Roll -> Roll
+applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ result
+  where
+    (result, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defence)
 
 -- cancel roll faces by an amount of shield count [fold version]
 cancel :: Face -> (Roll, Int) -> (Roll, Int)
@@ -32,11 +34,9 @@ cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
   where
     f x (xs, n) = if n <= 0 then (x : xs, 0) else if x == face then (xs, n - 1) else (x : xs, n)
 
--- apply defence shields on the attack and remove unrelevant faces from the attack
-applyDefence :: Roll -> Roll -> Roll
-applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ roll
-  where
-    (roll, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defence)
+-- count the number of a given face in a roll
+count :: Face -> Roll -> Int
+count face = length . filter (== face)
 
 -- frequency of each face in the roll [map variant]
 frequency :: [Face] -> [(Face, Int)]
