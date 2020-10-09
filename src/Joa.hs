@@ -42,6 +42,7 @@ applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ roll
 frequency :: [Face] -> [(Face, Int)]
 frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
 
+-- pretty print a roll
 showRoll :: Roll -> String
 showRoll = intercalate " | " . map (\(f, n) -> show n ++ " " ++ show f) . frequency
 
