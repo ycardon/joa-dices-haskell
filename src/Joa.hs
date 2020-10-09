@@ -1,6 +1,7 @@
 module Joa where
 
 import Control.Monad.Random (getStdGen, runRand)
+import Data.List (intercalate)
 import Data.Map (fromListWith, toList)
 import Dice (Face (..), Roll, rolldices)
 import Parser (parse)
@@ -16,10 +17,10 @@ joa command = do
 
   if isDefence
     then do
-      print ("attack", frequency attackRoll)
-      print ("defence", frequency defenceRoll)
-      print ("result", frequency (applyDefence attackRoll defenceRoll))
-    else print (frequency attackRoll)
+      putStrLn $ "attack:  " ++ showRoll attackRoll
+      putStrLn $ "defence: " ++ showRoll defenceRoll
+      putStrLn $ "result:  " ++ showRoll (applyDefence attackRoll defenceRoll)
+    else putStrLn $ showRoll attackRoll
 
 -- count the number of a given face in a roll result
 count :: Face -> Roll -> Int
@@ -40,6 +41,9 @@ applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ roll
 -- frequency of each face in the roll (using a map)
 frequency :: [Face] -> [(Face, Int)]
 frequency roll = toList (fromListWith (+) [(face, 1) | face <- roll])
+
+showRoll :: Roll -> String
+showRoll = intercalate " | " . map (\(f, n) -> show n ++ " " ++ show f) . frequency
 
 --------- implementation variants ---------
 
