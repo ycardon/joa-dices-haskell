@@ -1,5 +1,5 @@
 name: joa-dices-haskell
-version: 0.1.0.0
+version: 1.0.0
 github: 'ycardon/joa-dices-haskell'
 license: BSD3
 author: 'Yann Cardon'
@@ -29,7 +29,7 @@ library:
     source-dirs: src
 
 executables:
-    joa-dices-haskell-exe:
+    joa-dices:
         main: Main.hs
         source-dirs: app
         ghc-options:
