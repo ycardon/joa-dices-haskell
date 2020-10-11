@@ -18,9 +18,11 @@ parse = foldl f ([], [], False) . words
           where
             n = parseInt . init $ str
 
--- return the int value, or 1
+-- return an integer value or 1
 parseInt :: String -> Int
-parseInt s = if length (reads s :: [(Int, String)]) == 1 then read s else 1
+parseInt s = case reads s of
+  [(i, "")] -> i
+  _ -> 1
 
 -- return the corresponding dice
 dice :: Char -> Maybe Dice
