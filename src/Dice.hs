@@ -1,22 +1,14 @@
 module Dice (Dice, Face (..), Roll, blackDice, redDice, yellowDice, whiteDice, giganticDice, doomDice, rolldices) where
 
 import Control.Monad.Random (Rand, getRandomR)
+import Data.List (genericIndex)
 import System.Random (RandomGen)
 
 -- the different faces of a dice
-data Face
-  = Kill
-  | Disrupt
-  | Push
-  | Shield
-  | Blank
-  | Trample
-  | Death
-  | Rally
-  | DelayedRally
+data Face = Kill | Disrupt | Push | Shield | Blank | Trample | Death | Rally | DelayedRally
   deriving (Enum, Show, Eq, Ord, Bounded)
 
--- some dice
+-- the JoA dices
 type Dice = [Face]
 
 blackDice :: Dice
@@ -42,9 +34,7 @@ type Roll = [Face]
 
 -- roll one dice
 roll1 :: RandomGen g => Dice -> Rand g Face
-roll1 dice = do
-  index <- getRandomR (1, length dice)
-  return $ dice !! (index - 1)
+roll1 dice = return . genericIndex dice =<< getRandomR (0, length dice - 1)
 
 -- roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
@@ -55,13 +45,20 @@ rolln (n, dice)
     xs <- rolln (n -1, dice)
     return (x : xs)
 
--- -- this gives n times the same result :/
--- rolln (n, dice) = replicate n <$> roll1 dice
-
 -- roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
 rolldices [] = return []
 rolldices (x : xs) = do
-  x' <- rolln (x)
-  xs' <- rolldices (xs)
+  x' <- rolln x
+  xs' <- rolldices xs
   return (x' ++ xs')
+
+-------------- errands --------------
+
+-- -- this gives n times the same result :/
+-- rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
+-- rolln (n, dice) = replicate n <$> roll1 dice
+
+-- -- this does not compile
+-- rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+-- rolldices = return . concat . map rolln
