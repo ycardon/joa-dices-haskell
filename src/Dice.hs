@@ -38,12 +38,7 @@ roll1 dice = return . genericIndex dice =<< getRandomR (0, length dice - 1)
 
 -- roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
-rolln (n, dice)
-  | n <= 0 = return []
-  | otherwise = do
-    x <- roll1 dice
-    xs <- rolln (n -1, dice)
-    return (x : xs)
+rolln (n, dice) = mapM roll1 (replicate n dice)
 
 -- roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
@@ -54,10 +49,6 @@ rolldices (x : xs) = do
   return (x' ++ xs')
 
 -------------- errands --------------
-
--- -- this gives n times the same result :/
--- rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
--- rolln (n, dice) = replicate n <$> roll1 dice
 
 -- -- this does not compile
 -- rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
