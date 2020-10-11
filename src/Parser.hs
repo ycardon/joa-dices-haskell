@@ -11,10 +11,11 @@ parse = foldl f ([], [], False) . words
       | s == "-" = (att, def, True)
       | otherwise = case dice . toUpper . last $ s of
         Just d ->
-          let n = parseInt . init $ s
-           in if not isDef
-                then ((n, d) : att, def, isDef)
-                else (att, (n, d) : def, isDef)
+          if not isDef
+            then ((n, d) : att, def, isDef)
+            else (att, (n, d) : def, isDef)
+          where
+            n = parseInt . init $ s
         Nothing -> (att, def, isDef)
 
 -- return the int value, or 1

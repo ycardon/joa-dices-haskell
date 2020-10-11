@@ -32,6 +32,8 @@ doomDice = [Disrupt, Death, Death, Rally, Rally, DelayedRally]
 -- the result of rolling several dices
 type Roll = [Face]
 
+--------- roll dices ---------
+
 -- roll one dice
 roll1 :: RandomGen g => Dice -> Rand g Face
 roll1 dice = return . genericIndex dice =<< getRandomR (0, length dice - 1)

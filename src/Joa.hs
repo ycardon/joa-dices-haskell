@@ -33,9 +33,13 @@ cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
   where
     f x (xs, n) = if n <= 0 then (x : xs, 0) else if x == face then (xs, n - 1) else (x : xs, n)
 
+--------- utilities ---------
+
 -- pretty print a roll
 showRoll :: Roll -> String
-showRoll = concat . map (\(f, n) -> padL 2 (show n) ++ " " ++ padR 8 (show f)) . frequency
+showRoll = concat . map align . frequency
+  where
+    align (face, n) = padL 2 (show n) ++ " " ++ padR 8 (show face)
 
 -- count the number of a given face in a roll
 count :: Face -> Roll -> Int
@@ -51,7 +55,7 @@ padR n s = if length s < n then s ++ replicate (n - length s) ' ' else s
 
 -- left pad a string
 padL :: Int -> String -> String
-padL n s = reverse . padR n $ reverse s
+padL n s = reverse (padR n (reverse s))
 
 --------- implementation variants ---------
 
