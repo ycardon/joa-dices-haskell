@@ -8,7 +8,7 @@ parse :: String -> ([(Int, Dice)], [(Int, Dice)], Bool)
 parse = foldl f ([], [], False) . words
   where
     f (att, def, isDef) str
-      | str == "-" = (att, def, True)
+      | str `elem` ["-", "/"] = (att, def, True)
       | otherwise = case dice . toUpper . last $ str of
         Nothing -> (att, def, isDef)
         Just d ->
