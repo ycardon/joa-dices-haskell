@@ -1,6 +1,6 @@
 module Dice (Dice, Face (..), Roll, blackDice, redDice, yellowDice, whiteDice, giganticDice, doomDice, rolldices) where
 
-import Control.Monad.Random (Rand, getRandomR)
+import Control.Monad.Random (Rand, getRandomR, replicateM)
 import Data.List (genericIndex)
 import System.Random (RandomGen)
 
@@ -36,15 +36,15 @@ type Roll = [Face]
 
 -- roll one dice
 roll1 :: RandomGen g => Dice -> Rand g Face
-roll1 dice = return . genericIndex dice =<< getRandomR (0, length dice - 1)
+roll1 dice = genericIndex dice <$> getRandomR (0, length dice - 1)
 
 -- roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
-rolln (n, dice) = mapM roll1 (replicate n dice)
+rolln (n, dice) = replicateM n (roll1 dice)
 
 -- roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
-rolldices dices = return . concat =<< mapM rolln dices
+rolldices dices = concat <$> mapM rolln dices
 
 --------- with do notations ---------
 

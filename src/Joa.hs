@@ -31,13 +31,16 @@ applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ result
 cancel :: Face -> (Roll, Int) -> (Roll, Int)
 cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
   where
-    f x (xs, n) = if n <= 0 then (x : xs, 0) else if x == face then (xs, n - 1) else (x : xs, n)
+    f x (xs, n)
+      | n <= 0 = (x : xs, 0)
+      | x == face = (xs, n - 1)
+      | otherwise = (x : xs, n)
 
 --------- utilities ---------
 
 -- pretty print a roll
 showRoll :: Roll -> String
-showRoll = concat . map align . frequency
+showRoll = concatMap align . frequency
   where
     align (face, n) = padL 2 (show n) ++ " " ++ padR 8 (show face)
 
