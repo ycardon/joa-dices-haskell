@@ -42,14 +42,29 @@ rolln (n, dice) = mapM roll1 (replicate n dice)
 
 -- roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
-rolldices [] = return []
-rolldices (x : xs) = do
-  x' <- rolln x
-  xs' <- rolldices xs
-  return (x' ++ xs')
+rolldices dices = return . concat =<< mapM rolln dices
 
--------------- errands --------------
+--------- with do notations ---------
 
--- -- this does not compile
--- rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
--- rolldices = return . concat . map rolln
+-- -- roll one dice
+-- roll1' :: RandomGen g => Dice -> Rand g Face
+-- roll1' dice = do
+--   index <- getRandomR (1, length dice)
+--   return (genericIndex dice (index - 1))
+
+-- -- roll a dice several times [recursive variant]
+-- rolln' :: RandomGen g => (Int, Dice) -> Rand g Roll
+-- rolln' (n, dice)
+--   | n <= 0 = return []
+--   | otherwise = do
+--     x <- roll1' dice
+--     xs <- rolln' (n -1, dice)
+--     return (x : xs)
+
+-- -- roll a set of dices  [recursive variant]
+-- rolldices' :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+-- rolldices' [] = return []
+-- rolldices' (x : xs) = do
+--   x' <- rolln' (x)
+--   xs' <- rolldices' (xs)
+--   return (x' ++ xs')
