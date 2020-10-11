@@ -7,16 +7,16 @@ import Dice (Dice, blackDice, doomDice, giganticDice, redDice, whiteDice, yellow
 parse :: String -> ([(Int, Dice)], [(Int, Dice)], Bool)
 parse = foldl f ([], [], False) . words
   where
-    f (att, def, isDef) s
-      | s == "-" = (att, def, True)
-      | otherwise = case dice . toUpper . last $ s of
+    f (att, def, isDef) str
+      | str == "-" = (att, def, True)
+      | otherwise = case dice . toUpper . last $ str of
+        Nothing -> (att, def, isDef)
         Just d ->
           if not isDef
             then ((n, d) : att, def, isDef)
             else (att, (n, d) : def, isDef)
           where
-            n = parseInt . init $ s
-        Nothing -> (att, def, isDef)
+            n = parseInt . init $ str
 
 -- return the int value, or 1
 parseInt :: String -> Int
