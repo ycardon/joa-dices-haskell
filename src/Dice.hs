@@ -40,7 +40,7 @@ roll1 dice = genericIndex dice <$> getRandomR (0, length dice - 1)
 
 -- roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
-rolln (n, dice) = replicateM n $ roll1 dice
+rolln (n, dice) = replicateM n (roll1 dice)
 
 -- roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
