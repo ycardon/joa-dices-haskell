@@ -1,3 +1,4 @@
+-- | Johan of Arc business rules and CLI
 module Joa where
 
 import Control.Monad.Random (getStdGen, runRand)
@@ -5,7 +6,7 @@ import Data.List (group, sort)
 import Dice (Face (..), Roll, rolldices)
 import Parser (parse)
 
--- parse a command and print the result
+-- | parse a command and print the result
 joa :: String -> IO ()
 joa command = do
   let (attackDices, defenceDices, isDefence) = parse command
@@ -21,13 +22,13 @@ joa command = do
       putStrLn $ "result  = " ++ showRoll (applyDefence attackRoll defenceRoll)
     else putStrLn $ showRoll attackRoll
 
--- apply defence shields on the attack and remove unrelevant faces from the attack
+-- | apply defence shields on the attack and remove unrelevant faces from the attack
 applyDefence :: Roll -> Roll -> Roll
 applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ result
   where
     (result, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defence)
 
--- cancel roll faces by an amount of shield count [fold version]
+-- | cancel roll faces by an amount of shield count [fold version]
 cancel :: Face -> (Roll, Int) -> (Roll, Int)
 cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
   where
@@ -38,25 +39,25 @@ cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
 
 --------- utilities ---------
 
--- pretty print a roll
+-- | pretty print a roll
 showRoll :: Roll -> String
 showRoll = concatMap align . frequency
   where
     align (face, n) = padL 2 (show n) ++ " " ++ padR 8 (show face)
 
--- count the number of a given face in a roll
+-- | count the number of a given face in a roll
 count :: Face -> Roll -> Int
 count face = length . filter (== face)
 
--- -- frequency of each face in the roll [list group variant]
+-- | frequency of each face in the roll [list group variant]
 frequency :: [Face] -> [(Face, Int)]
 frequency = map (\(x : xs) -> (x, length xs + 1)) . group . sort
 
--- right pad a string
+-- | right pad a string
 padR :: Int -> String -> String
-padR n s = if length s < n then s ++ replicate (n - length s) ' ' else s
+padR n s = replicate (n - length s) ' ' ++ s
 
--- left pad a string
+-- | left pad a string
 padL :: Int -> String -> String
 padL n s = reverse (padR n (reverse s))
 

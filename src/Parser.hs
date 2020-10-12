@@ -1,9 +1,10 @@
+-- | Johan of Arc command line parser
 module Parser (parse) where
 
 import Data.Char (toUpper)
 import Dice (Dice, blackDice, doomDice, giganticDice, redDice, whiteDice, yellowDice)
 
--- parse a fight in the form : 3R Y - 2B 1W
+-- | parse a fight in the form : 3R Y - 2B 1W
 parse :: String -> ([(Int, Dice)], [(Int, Dice)], Bool)
 parse = foldl f ([], [], False) . words
   where
@@ -18,13 +19,13 @@ parse = foldl f ([], [], False) . words
           where
             n = parseInt . init $ str
 
--- return an integer value or 1
+-- | return an integer value or 1
 parseInt :: String -> Int
 parseInt s = case reads s of
   [(i, "")] -> i
   _ -> 1
 
--- return the corresponding dice
+-- | return the corresponding dice
 dice :: Char -> Maybe Dice
 dice 'B' = Just blackDice
 dice 'R' = Just redDice

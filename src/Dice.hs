@@ -1,14 +1,15 @@
+-- | Johan of Arc dices
 module Dice (Dice, Face (..), Roll, blackDice, redDice, yellowDice, whiteDice, giganticDice, doomDice, rolldices) where
 
 import Control.Monad.Random (Rand, getRandomR, replicateM)
 import Data.List (genericIndex)
 import System.Random (RandomGen)
 
--- the different faces of a dice
+-- | the possible faces of a dice
 data Face = Kill | Disrupt | Push | Shield | Blank | Trample | Death | Rally | DelayedRally
   deriving (Enum, Show, Eq, Ord, Bounded)
 
--- the JoA dices
+-- | the JoA dices
 type Dice = [Face]
 
 blackDice :: Dice
@@ -29,20 +30,20 @@ giganticDice = [Kill, Disrupt, Disrupt, Push, Trample, Trample]
 doomDice :: Dice
 doomDice = [Disrupt, Death, Death, Rally, Rally, DelayedRally]
 
--- the result of rolling several dices
+-- | the result of rolling several dices
 type Roll = [Face]
 
 --------- roll dices ---------
 
--- roll one dice
+-- | roll one dice
 roll1 :: RandomGen g => Dice -> Rand g Face
 roll1 dice = genericIndex dice <$> getRandomR (0, length dice - 1)
 
--- roll a dice several times
+-- | roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
 rolln (n, dice) = replicateM n (roll1 dice)
 
--- roll a set of dices
+-- | roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
 rolldices dices = concat <$> mapM rolln dices
 
