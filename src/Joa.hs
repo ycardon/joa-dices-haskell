@@ -51,7 +51,7 @@ count face = length . filter (== face)
 
 -- | frequency of each face in the roll [list group variant]
 frequency :: [Face] -> [(Face, Int)]
-frequency = map (\(x : xs) -> (x, length xs + 1)) . group . sort
+frequency = map (\x -> (head x, length x)) . group . sort
 
 -- | right pad a string
 padR :: Int -> String -> String
