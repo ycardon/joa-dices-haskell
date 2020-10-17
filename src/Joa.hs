@@ -43,7 +43,7 @@ cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
 showRoll :: Roll -> String
 showRoll = concatMap align . frequency
   where
-    align (face, n) = padL 2 (show n) ++ " " ++ padR 8 (show face)
+    align (face, n) = padR 3 (show n) ++ " " ++ padL 8 (show face)
 
 -- | count the number of a given face in a roll
 count :: Face -> Roll -> Int
