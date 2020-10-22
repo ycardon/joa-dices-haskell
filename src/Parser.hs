@@ -10,7 +10,7 @@ parse = foldl f ([], [], False) . words
   where
     f (att, def, isDef) str
       | str `elem` ["-", "/"] = (att, def, True)
-      | otherwise = case dice . toUpper . last $ str of
+      | otherwise = case parseDice . toUpper . last $ str of
         Nothing -> (att, def, isDef)
         Just d ->
           if not isDef
@@ -26,11 +26,11 @@ parseInt s = case reads s of
   _ -> 1
 
 -- | return the corresponding dice
-dice :: Char -> Maybe Dice
-dice 'B' = Just blackDice
-dice 'R' = Just redDice
-dice 'Y' = Just yellowDice
-dice 'W' = Just whiteDice
-dice 'G' = Just giganticDice
-dice 'D' = Just doomDice
-dice _ = Nothing
+parseDice :: Char -> Maybe Dice
+parseDice 'B' = Just blackDice
+parseDice 'R' = Just redDice
+parseDice 'Y' = Just yellowDice
+parseDice 'W' = Just whiteDice
+parseDice 'G' = Just giganticDice
+parseDice 'D' = Just doomDice
+parseDice _ = Nothing
