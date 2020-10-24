@@ -37,17 +37,14 @@ type Roll = [Face]
 
 -- | roll one dice
 roll1 :: RandomGen g => Dice -> Rand g Face
--- roll1 dice = getRandomR (0, length dice - 1) >>= return . genericIndex dice
 roll1 dice = genericIndex dice <$> getRandomR (0, length dice - 1)
 
 -- | roll a dice several times
 rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
--- rolln (n, dice) = mapM roll1 (replicate n dice)
 rolln (n, dice) = replicateM n (roll1 dice)
 
 -- | roll a set of dices
 rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
--- rolldices dices = mapM rolln dices >>= return . concat
 rolldices dices = concat <$> mapM rolln dices
 
 --------- with do notations ---------
@@ -74,6 +71,20 @@ rolldices dices = concat <$> mapM rolln dices
 --   x' <- rolln' (x)
 --   xs' <- rolldices' (xs)
 --   return (x' ++ xs')
+
+--------- with >>= notations ---------
+
+-- -- | roll one dice
+-- roll1 :: RandomGen g => Dice -> Rand g Face
+-- roll1 dice = getRandomR (0, length dice - 1) >>= return . genericIndex dice
+
+-- -- | roll a dice several times
+-- rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
+-- rolln (n, dice) = mapM roll1 (replicate n dice)
+
+-- -- | roll a set of dices
+-- rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+-- rolldices dices = mapM rolln dices >>= return . concat
 
 --------- same with a newtype ---------
 
