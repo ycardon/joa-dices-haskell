@@ -33,8 +33,7 @@ cancel :: Face -> (Roll, Int) -> (Roll, Int)
 cancel face (roll, shieldCount) = foldr f ([], shieldCount) roll
   where
     f x (xs, n)
-      | n <= 0 = (x : xs, 0)
-      | x == face = (xs, n - 1)
+      | x == face && n > 0 = (xs, n - 1)
       | otherwise = (x : xs, n)
 
 --------- utilities ---------
