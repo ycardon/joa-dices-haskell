@@ -1,5 +1,5 @@
 -- | Johan of Arc dices
-module Dice (Dice, Face (..), Roll, blackDice, redDice, yellowDice, whiteDice, giganticDice, doomDice, rolldices) where
+module Dice (Dice, Face (..), Roll, blackDice, redDice, yellowDice, whiteDice, giganticDice, doomDice, rollDices) where
 
 import Control.Monad.Random (Rand, getRandomR, replicateM)
 import Data.List (genericIndex)
@@ -40,12 +40,12 @@ roll1 :: RandomGen g => Dice -> Rand g Face
 roll1 dice = genericIndex dice <$> getRandomR (0, length dice - 1)
 
 -- | roll a dice several times
-rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
-rolln (n, dice) = replicateM n (roll1 dice)
+rollN :: RandomGen g => (Int, Dice) -> Rand g Roll
+rollN (n, dice) = replicateM n (roll1 dice)
 
 -- | roll a set of dices
-rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
-rolldices dices = concat <$> mapM rolln dices
+rollDices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+rollDices dices = concat <$> mapM rollN dices
 
 --------- with do notations ---------
 
@@ -56,20 +56,20 @@ rolldices dices = concat <$> mapM rolln dices
 --   return (genericIndex dice (index - 1))
 
 -- -- roll a dice several times [recursive variant]
--- rolln' :: RandomGen g => (Int, Dice) -> Rand g Roll
--- rolln' (n, dice)
+-- rollN' :: RandomGen g => (Int, Dice) -> Rand g Roll
+-- rollN' (n, dice)
 --   | n <= 0 = return []
 --   | otherwise = do
 --     x <- roll1' dice
---     xs <- rolln' (n -1, dice)
+--     xs <- rollN' (n -1, dice)
 --     return (x : xs)
 
 -- -- roll a set of dices  [recursive variant]
--- rolldices' :: RandomGen g => [(Int, Dice)] -> Rand g Roll
--- rolldices' [] = return []
--- rolldices' (x : xs) = do
---   x' <- rolln' (x)
---   xs' <- rolldices' (xs)
+-- rollDices' :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+-- rollDices' [] = return []
+-- rollDices' (x : xs) = do
+--   x' <- rollN' (x)
+--   xs' <- rollDices' (xs)
 --   return (x' ++ xs')
 
 --------- with >>= notations ---------
@@ -79,19 +79,19 @@ rolldices dices = concat <$> mapM rolln dices
 -- roll1 dice = getRandomR (0, length dice - 1) >>= return . genericIndex dice
 
 -- -- | roll a dice several times
--- rolln :: RandomGen g => (Int, Dice) -> Rand g Roll
--- rolln (n, dice) = mapM roll1 (replicate n dice)
+-- rollN :: RandomGen g => (Int, Dice) -> Rand g Roll
+-- rollN (n, dice) = mapM roll1 (replicate n dice)
 
 -- -- | roll a set of dices
--- rolldices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
--- rolldices dices = mapM rolln dices >>= return . concat
+-- rollDices :: RandomGen g => [(Int, Dice)] -> Rand g Roll
+-- rollDices dices = mapM rollN dices >>= return . concat
 
 --------- same with a newtype ---------
 
 -- newtype Roll' = Roll' [Face]
 
--- rolln' :: RandomGen g => (Int, Dice) -> Rand g Roll'
--- rolln' (n, dice) = Roll' <$> replicateM n (roll1 dice)
+-- rollN' :: RandomGen g => (Int, Dice) -> Rand g Roll'
+-- rollN' (n, dice) = Roll' <$> replicateM n (roll1 dice)
 
--- rolldices' :: RandomGen g => [(Int, Dice)] -> Rand g Roll'
--- rolldices' dices = Roll' . concat <$> mapM rolln dices
+-- rollDices' :: RandomGen g => [(Int, Dice)] -> Rand g Roll'
+-- rollDices' dices = Roll' . concat <$> mapM rollN dices

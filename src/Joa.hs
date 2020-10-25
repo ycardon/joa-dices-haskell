@@ -3,30 +3,30 @@ module Joa where
 
 import Control.Monad.Random (getStdGen, runRand)
 import Data.List (group, sort)
-import Dice (Face (..), Roll, rolldices)
+import Dice (Face (..), Roll, rollDices)
 import Parser (parse)
 
 -- | parse a command and print the result
 joa :: String -> IO ()
 joa command = do
-  let (attackDices, defenceDices, isDefence) = parse command
+  let (attackDices, defenseDices, isDefense) = parse command
 
   gen <- getStdGen
-  let (attackRoll, gen') = runRand (rolldices attackDices) gen
-  let (defenceRoll, _) = runRand (rolldices defenceDices) gen'
+  let (attackRoll, gen') = runRand (rollDices attackDices) gen
+  let (defenseRoll, _) = runRand (rollDices defenseDices) gen'
 
-  if isDefence
+  if isDefense
     then do
       putStrLn $ "attack  + " ++ showRoll attackRoll
-      putStrLn $ "defence - " ++ showRoll defenceRoll
-      putStrLn $ "result  = " ++ showRoll (applyDefence attackRoll defenceRoll)
+      putStrLn $ "defense - " ++ showRoll defenseRoll
+      putStrLn $ "result  = " ++ showRoll (applyDefense attackRoll defenseRoll)
     else putStrLn $ showRoll attackRoll
 
--- | apply defence shields on the attack and remove unrelevant faces from the attack
-applyDefence :: Roll -> Roll -> Roll
-applyDefence attack defence = filter (/= Blank) . filter (/= Shield) $ result
+-- | apply defense shields on the attack and remove unrelevant faces from the attack
+applyDefense :: Roll -> Roll -> Roll
+applyDefense attack defense = filter (/= Blank) . filter (/= Shield) $ result
   where
-    (result, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defence)
+    (result, _) = cancel Push . cancel Disrupt . cancel Kill $ (attack, count Shield defense)
 
 -- | cancel roll faces by an amount of shield count [fold version]
 cancel :: Face -> (Roll, Int) -> (Roll, Int)
